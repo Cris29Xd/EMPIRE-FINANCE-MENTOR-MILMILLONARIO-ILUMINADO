@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with financial summary",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "currency": { "type": "string" },
+        "totalNetWorth": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "email"]
+    },
+    "Account": {
+      "title": "Account",
+      "description": "Financial accounts like credit cards, bank accounts, or specific debts",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["checking", "savings", "credit_card", "debt", "investment"] },
+        "balance": { "type": "number" },
+        "limit": { "type": "number", "description": "For credit cards" },
+        "interestRate": { "type": "number" },
+        "ownerId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "type", "balance", "ownerId"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A single financial movement (income or expense)",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "date": { "type": "string", "format": "date-time" },
+        "accountId": { "type": "string" },
+        "notes": { "type": "string" },
+        "ownerId": { "type": "string" }
+      },
+      "required": ["amount", "category", "type", "date", "ownerId"]
+    },
+    "MentorSession": {
+      "title": "MentorSession",
+      "description": "Chat history with the AI mentor",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["user", "model"] },
+              "content": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "lastInteraction": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "messages"]
+    }
+  },
+  "firestore": {
+    "users": { "schema": "User", "description": "Profiles of the users" },
+    "accounts": { "schema": "Account", "description": "Financial accounts associated with users" },
+    "transactions": { "schema": "Transaction", "description": "Financial transactions logged by users" },
+    "mentorship": { "schema": "MentorSession", "description": "AI Mentor chat sessions" }
+  }
+}
