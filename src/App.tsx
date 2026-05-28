@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { AuthProvider, useAuth } from './lib/AuthContext';
+import React, { useState, useEffect } from 'react';
+import { AuthProvider } from './lib/AuthContext';
+import { AccessGate } from './components/AccessGate';
 import { LayoutDashboard, Wallet, ReceiptText, BrainCircuit, Menu, X, TrendingUp, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Dashboard } from './components/Dashboard';
@@ -19,9 +20,16 @@ const NAV_ITEMS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: 'mentor',       label: 'Mentor AI',         icon: BrainCircuit },
 ];
 
+const TOKEN_KEY = 'empire-access-token';
+
 function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [unlocked, setUnlocked] = useState(() => !!localStorage.getItem(TOKEN_KEY));
+
+  if (!unlocked) {
+    return <AccessGate onUnlocked={() => setUnlocked(true)} />;
+  }
 
   const activeItem = NAV_ITEMS.find(i => i.id === activeTab)!;
 

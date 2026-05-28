@@ -15,8 +15,15 @@ REGLAS:
 - Tono: como un WhatsApp de Alex Hormozi a las 6am — sin filtros, con urgencia
 - IDIOMA: SIEMPRE en ESPAÑOL`;
 
+function isAuthorized(req: VercelRequest): boolean {
+  const token = process.env.ACCESS_TOKEN;
+  if (!token) return true;
+  return req.headers['x-access-token'] === token;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
+  if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' });
 
   const { financialContext } = req.body as { financialContext: string };
 

@@ -3,6 +3,10 @@ import { format, subMonths, startOfMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Timestamp } from 'firebase/firestore';
 
+const TOKEN_KEY = 'empire-access-token';
+const getToken = () => localStorage.getItem(TOKEN_KEY) ?? '';
+const authHeaders = () => ({ 'Content-Type': 'application/json', 'x-access-token': getToken() });
+
 // Streams the mentor response token-by-token, calling onDelta for each chunk.
 export async function getMentorAdvice(
   history: { role: 'user' | 'model'; content: string }[],
@@ -11,7 +15,7 @@ export async function getMentorAdvice(
 ): Promise<string> {
   const res = await fetch('/api/mentor', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ messages: history, financialContext }),
   });
 
@@ -54,7 +58,7 @@ export async function getMentorAdvice(
 export async function getDashboardInsight(financialContext: string): Promise<string> {
   const res = await fetch('/api/insight', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ financialContext }),
   });
 

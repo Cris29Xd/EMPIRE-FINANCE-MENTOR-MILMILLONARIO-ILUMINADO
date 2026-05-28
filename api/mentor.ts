@@ -20,8 +20,16 @@ Cuando analices sus finanzas:
 - Trata sus finanzas como el balance de una empresa Fortune 500 en miniatura
 - Usa **negritas**, listas y estructura cuando sea útil para la claridad`;
 
+function isAuthorized(req: VercelRequest): boolean {
+  const token = process.env.ACCESS_TOKEN;
+  if (!token) return true; // no token configured → open (dev mode)
+  const header = req.headers['x-access-token'];
+  return header === token;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).end('Method Not Allowed');
+  if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' });
 
   const { messages, financialContext } = req.body as {
     messages: { role: string; content: string }[];
