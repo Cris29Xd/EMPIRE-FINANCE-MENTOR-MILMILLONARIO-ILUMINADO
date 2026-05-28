@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './lib/AuthContext';
-import { signInWithGoogle, logOut } from './lib/firebase';
-import { LayoutDashboard, Wallet, ReceiptText, BrainCircuit, LogOut, Menu, X, TrendingUp, Users } from 'lucide-react';
+import { LayoutDashboard, Wallet, ReceiptText, BrainCircuit, Menu, X, TrendingUp, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Dashboard } from './components/Dashboard';
 import { Accounts } from './components/Accounts';
@@ -13,62 +12,16 @@ import { cn } from './lib/utils';
 type Tab = 'dashboard' | 'accounts' | 'transactions' | 'clients' | 'mentor';
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ElementType }[] = [
-  { id: 'dashboard',     label: 'Dashboard',        icon: LayoutDashboard },
-  { id: 'accounts',      label: 'Cuentas & Deudas', icon: Wallet },
-  { id: 'transactions',  label: 'Transacciones',    icon: ReceiptText },
-  { id: 'clients',       label: 'Clientes & Cobros', icon: Users },
-  { id: 'mentor',        label: 'Mentor AI',        icon: BrainCircuit },
+  { id: 'dashboard',    label: 'Dashboard',         icon: LayoutDashboard },
+  { id: 'accounts',     label: 'Cuentas & Deudas',  icon: Wallet },
+  { id: 'transactions', label: 'Transacciones',     icon: ReceiptText },
+  { id: 'clients',      label: 'Clientes & Cobros', icon: Users },
+  { id: 'mentor',       label: 'Mentor AI',         icon: BrainCircuit },
 ];
 
 function AppContent() {
-  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center justify-center p-6">
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: 'url(https://www.transparenttextures.com/patterns/carbon-fibre.png)' }}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full text-center space-y-8 relative z-10"
-        >
-          <div className="flex justify-center">
-            <div className="w-20 h-20 bg-amber-500 rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(245,158,11,0.25)]">
-              <TrendingUp className="w-12 h-12 text-black" />
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h1 className="text-5xl font-black tracking-tighter uppercase italic">Empire Finance</h1>
-            <p className="text-zinc-400 font-medium">
-              Construye tu legado. Optimiza tu capital. Consulta a los maestros.
-            </p>
-          </div>
-
-          <button
-            onClick={signInWithGoogle}
-            className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-zinc-100 transition-colors flex items-center justify-center gap-3 active:scale-95 cursor-pointer"
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/layout/google.svg"
-              className="w-5 h-5"
-              alt="Google"
-            />
-            INICIAR SESIÓN CON GOOGLE
-          </button>
-
-          <p className="text-xs text-zinc-600 uppercase tracking-widest font-bold">
-            Mentalidad de los más exitosos del mundo
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
 
   const activeItem = NAV_ITEMS.find(i => i.id === activeTab)!;
 
@@ -113,22 +66,14 @@ function AppContent() {
           ))}
         </nav>
 
-        {/* Footer */}
-        <div className="p-3 border-t border-zinc-800 space-y-2">
+        {/* Footer — collapse toggle only */}
+        <div className="p-3 border-t border-zinc-800">
           <button
             onClick={() => setSidebarOpen(o => !o)}
             className="w-full flex items-center gap-3 px-3 py-2 text-zinc-500 hover:text-zinc-200 transition-colors cursor-pointer rounded-xl hover:bg-zinc-900"
           >
             {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             {sidebarOpen && <span className="text-xs font-bold uppercase tracking-widest">Colapsar</span>}
-          </button>
-
-          <button
-            onClick={logOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-red-500 hover:bg-red-500/10 rounded-xl transition-all cursor-pointer"
-          >
-            <LogOut className="w-4 h-4 shrink-0" />
-            {sidebarOpen && <span className="font-bold text-sm tracking-tight">Cerrar Sesión</span>}
           </button>
         </div>
       </aside>
@@ -144,18 +89,9 @@ function AppContent() {
               </p>
               <h2 className="text-3xl font-black tracking-tighter italic">{activeItem.label}</h2>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-zinc-400">{user?.displayName}</p>
-                <p className="text-[10px] text-amber-500/60 font-mono uppercase">Empire Status: Active</p>
-              </div>
-              {user?.photoURL && (
-                <img
-                  src={user.photoURL}
-                  className="w-11 h-11 rounded-full border-2 border-zinc-700 p-0.5"
-                  alt="Avatar"
-                />
-              )}
+            <div className="hidden sm:flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-xl">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="text-[10px] font-mono font-bold text-amber-500/70 uppercase tracking-widest">Empire Status: Active</span>
             </div>
           </header>
 
