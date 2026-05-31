@@ -1,43 +1,33 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "./firebase";
 
-// Simple local identity — no login required.
-// UID is generated once and persisted in localStorage.
-function getOrCreateUid(): string {
-  const key = 'empire-uid';
-  let uid = localStorage.getItem(key);
-  if (!uid) {
-    uid = 'local-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
-    localStorage.setItem(key, uid);
-  }
-  return uid;
-}
-
-export interface LocalUser {
-  uid: string;
-  displayName: string;
-  photoURL: null;
-}
-
-const LOCAL_USER: LocalUser = {
-  uid: getOrCreateUid(),
-  displayName: 'Empire Builder',
-  photoURL: null,
-};
+// Uses Firebase Anonymous Auth — signs in automatically, no login screen needed.
+// Each browser gets a persistent anonymous UID that Firebase accepts for Firestore rules.
 
 interface AuthContextType {
-  user: LocalUser;
-  loading: false;
+  user: User | null;
+  loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: LOCAL_USER,
-  loading: false,
-});
+const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <AuthContext.Provider value={{ user: LOCAL_USER, loading: false }}>
-    {children}
-  </AuthContext.Provider>
-);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+    });
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, loading }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => useContext(AuthContext);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AuthProvider } from './lib/AuthContext';
 import { AccessGate } from './components/AccessGate';
 import { LayoutDashboard, Wallet, ReceiptText, BrainCircuit, Menu, X, TrendingUp, Users } from 'lucide-react';
