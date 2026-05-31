@@ -1,33 +1,27 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "./firebase";
+import React, { createContext, useContext } from "react";
 
-// Uses Firebase Anonymous Auth — signs in automatically, no login screen needed.
-// Each browser gets a persistent anonymous UID that Firebase accepts for Firestore rules.
+// No Firebase Auth — personal app uses a local UUID as ownerId.
+const UID_KEY = 'empire-uid';
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
+function getUid(): string {
+  let uid = localStorage.getItem(UID_KEY);
+  if (!uid) {
+    uid = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(UID_KEY, uid);
+  }
+  return uid;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+export interface LocalUser { uid: string; displayName: string; photoURL: null; }
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+const LOCAL_USER: LocalUser = { uid: getUid(), displayName: 'Empire Builder', photoURL: null };
 
-  useEffect(() => {
-    return onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-      setLoading(false);
-    });
-  }, []);
+const AuthContext = createContext({ user: LOCAL_USER, loading: false });
 
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
-};
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <AuthContext.Provider value={{ user: LOCAL_USER, loading: false }}>
+    {children}
+  </AuthContext.Provider>
+);
 
 export const useAuth = () => useContext(AuthContext);
