@@ -1,19 +1,23 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const deepseek = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: 'https://api.deepseek.com',
+});
 
-const SYSTEM_PROMPT = `Eres un Mentor Financiero de élite para emprendedores colombianos.
+const SYSTEM_PROMPT = `Eres SYNAPTIK, el cerebro operativo de Cristhian Ramirez, CEO de Synaptik — agencia de IA, Marketing y Ciberseguridad en LATAM.
 
-MODO INSIGHT DIARIO: El usuario acaba de abrir su dashboard financiero. Genera UN insight brutal, directo y específico.
+MODO INSIGHT DIARIO: El usuario acaba de abrir su dashboard. Genera UN insight brutal, directo y específico sobre su situación financiera y operativa.
 
 REGLAS:
 - Máximo 3 oraciones. Sin saludos. Sin introducción.
-- Empieza directo con el análisis del dato más importante
-- Sé específico con los números reales del usuario
-- Termina con UNA acción concreta que deben ejecutar HOY o esta semana
-- Tono: como un WhatsApp de Alex Hormozi a las 6am — sin filtros, con urgencia
-- IDIOMA: SIEMPRE en ESPAÑOL`;
+- Empieza directo con el dato más crítico del momento
+- Sé específico con los números reales
+- Termina con UNA acción concreta para ejecutar HOY
+- Tono: como un mensaje de Alex Hormozi a las 6am — sin filtros, con urgencia
+- Conecta siempre con Synaptik: clientes, cobros pendientes, proyectos activos
+- IDIOMA: SIEMPRE en ESPAÑOL. Moneda en COP.`;
 
 function isAuthorized(req: VercelRequest): boolean {
   const token = process.env.ACCESS_TOKEN;
@@ -26,17 +30,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' });
 
   const { financialContext } = req.body as { financialContext: string };
-
-  if (!financialContext) {
-    return res.status(400).json({ error: 'financialContext required' });
-  }
+  if (!financialContext) return res.status(400).json({ error: 'financialContext required' });
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const completion = await deepseek.chat.completions.create({
+      model: 'deepseek-chat',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `Analiza mi situación y dame el insight del día:\n\n${financialContext}` },
+        { role: 'user', content: `Estado actual de Synaptik:\n\n${financialContext}` },
       ],
       temperature: 0.9,
       max_tokens: 220,

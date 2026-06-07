@@ -14,7 +14,7 @@ import { cn } from '../lib/utils';
 
 const WELCOME: Message = {
   role: 'model',
-  content: 'Soy tu mentor financiero de élite. Tengo acceso a tu contexto financiero completo. ¿Qué movimiento estratégico ejecutamos hoy?',
+  content: 'Soy SYNAPTIK — tu cerebro operativo. Tengo acceso a tus finanzas, clientes y el estado de la agencia. ¿Qué movimiento estratégico ejecutamos hoy?',
   timestamp: new Date(),
 };
 
@@ -158,16 +158,16 @@ export function Mentor() {
             <BrainCircuit className="w-7 h-7 text-black" />
           </div>
           <div>
-            <h3 className="text-lg font-black italic uppercase tracking-tighter text-amber-500">Billionaire Mentor</h3>
+            <h3 className="text-lg font-black italic uppercase tracking-tighter text-amber-500">Synaptik Brain</h3>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">GPT-4o · Streaming</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">DeepSeek · Streaming</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="hidden md:flex gap-3">
-            <Tag>Mindset: High Growth</Tag>
+            <Tag>Synaptik 360™</Tag>
             <Tag>Colombia 🇨🇴</Tag>
           </div>
           <button
@@ -193,7 +193,7 @@ export function Mentor() {
             <MsgAvatar role={msg.role} />
             <div className={cn('space-y-1', msg.role === 'user' ? 'text-right' : 'text-left')}>
               <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">
-                {msg.role === 'model' ? 'Billionaire Mentor' : (user?.displayName ?? 'Tú')}
+                {msg.role === 'model' ? 'Synaptik Brain' : (user?.displayName ?? 'Tú')}
               </p>
               <div className={cn(
                 'p-4 rounded-2xl text-sm leading-relaxed',
@@ -262,7 +262,7 @@ export function Mentor() {
           </button>
         </div>
         <p className="mt-2 text-[10px] text-center text-zinc-600 font-bold uppercase tracking-widest">
-          Powered by GPT-4o · Streaming · Contexto financiero real
+          Powered by DeepSeek · Streaming · Contexto Synaptik real
         </p>
       </form>
     </div>
